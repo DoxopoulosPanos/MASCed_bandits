@@ -9,6 +9,7 @@ from some_bandits.bandits.EwS import EwS
 from some_bandits.bandits.EXP3S import EXP3S
 from some_bandits.bandits.DUCB import DUCB
 from some_bandits.bandits.exploreOnly import exploreOnly
+from some_bandits.bandits.TS import TS
 
 
 def init_bandit(name, formula=""):
@@ -23,7 +24,8 @@ def init_bandit(name, formula=""):
         "EXP3S": EXP3S,
         "EXP4": EXP4,
         "DUCB": DUCB,
-        "exploreOnly": exploreOnly
+        "exploreOnly": exploreOnly,
+        "TS": TS
 
     }.get(name, None)
 

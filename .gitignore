@@ -2,5 +2,6 @@
 plotting/results
 plotting/*.pdf
 plotting/*.png
+**/__pycache__/**
 
 
