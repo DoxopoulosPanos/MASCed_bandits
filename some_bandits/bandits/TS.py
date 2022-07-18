@@ -12,12 +12,13 @@ PRIOR_FYNC = None
 POSTERIOR_FYNC = None
 
 class TS(Bandit):
-    def __init__(self, prior_formula, posterior_formula):
-        super().__init__("TS-" + prior_formula + "_" + posterior_formula )
+    def __init__(self, formula):
+        super().__init__("TS-" + formula )
         self.ts_arms = []
         initial_configuration = bandit_args["initial_configuration"]
         self.game_list = []
         self.last_action = initial_configuration
+        self.formula = formula
 
         # initialise arms and probabilities
         for arm in self.arms:
@@ -26,13 +27,16 @@ class TS(Bandit):
     def start_strategy(self, reward):
         self.game_list.append([reward, self.last_action])
 
-        # update values based on reward
-        self.update_posterior(reward)
+        if self.formula == "BB":  # Beta Prior, Binomial Posterior
+            # update values based on reward
+            self.update_posterior(reward)
+        elif self.formula == "NN":   # Normal Prior Normal Posterior
+            self.update_posterior_normal(reward)
 
 
         # iterate for each arm
         for ts_arm in self.ts_arms:
-            ts_arm.sample()
+            ts_arm.sample(self.formula)
 
         for ts_arm in self.ts_arms:
             print("this is the arm: {} and this is the probability: {}".format(ts_arm.arm, ts_arm.probability))
@@ -56,3 +60,17 @@ class TS(Bandit):
                     ts_arm.failures += 1
 
                 print("ts_arm {} updated to successes = {} and failures {}".format(ts_arm.arm, ts_arm.successes, ts_arm.failures))
+
+    def update_posterior_normal(self, reward):
+        ### assume real sigma = 1000
+        ### start with sigma 10000
+
+        print("next = {}".format(next((ts_arm for ts_arm in self.ts_arms if ts_arm.arm == self.last_action), None)))
+        for ts_arm in self.ts_arms:
+            if ts_arm.arm == self.last_action:
+                ts_arm.rewards.append(reward)
+                ts_arm.mu = np.mean(ts_arm.rewards)
+                ts_arm.sigma = 1000
+
+                print("ts_arm {} updated to mu = {} and sigma {}".format(ts_arm.arm, ts_arm.mu, ts_arm.sigma))
+
