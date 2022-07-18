@@ -10,8 +10,8 @@ class Arm:
         self.probability = 0
 
         self.mu = 0
-        self.sigma = 10000
-        self.real_sigma = 1000
+        self.variance = 10000   #sigma square
+        self.real_variance = 100
         self.rewards = []
 
     def sample(self, formula):
@@ -28,14 +28,14 @@ class Arm:
 
     ### Normal Posterior
     def sample_normal_distribution(self, total_samples=1):
-        return np.random.normal(self.mu, self.sigma**2 + self.real_sigma**2, total_samples)
+        return np.random.normal(self.mu, self.variance + self.real_variance, total_samples)
 
     def calculate_new_mu_and_sigma(self):
         times_played = len(self.rewards)
         total_reward = sum(self.rewards)
-        new_sigma = ((1/self.sigma)**2 + (times_played / (self.real_sigma**2)))**(-1)
-        temp = self.mu/(self.sigma**2) + total_reward/(self.real_sigma**2)
-        self.mu = temp * new_sigma
-        self.sigma = new_sigma
+        new_variance = ((1/self.variance) + (times_played / (self.real_variance)))**(-1)
+        temp = self.mu/(self.variance) + total_reward/self.real_variance
+        self.mu = temp * new_variance
+        self.variance = new_variance
 
 
