@@ -69,5 +69,5 @@ class TS(Bandit):
                 ts_arm.rewards.append(reward)
                 ts_arm.calculate_new_mu_and_sigma()
 
-                print("ts_arm {} updated to mu = {} and variance {}".format(ts_arm.arm, ts_arm.mu, ts_arm.variance))
+                print("ts_arm {} updated to mu = {} and sigma {}".format(ts_arm.arm, ts_arm.mu_0, ts_arm.sigma_0))
 
