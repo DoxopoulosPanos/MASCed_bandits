@@ -14,7 +14,7 @@ class Test():
     def init_3_arms(self):
         # desired_distribution
         arm_value = None
-        mu = 0.1
+        mu = 0.6
         sigma = 0.2
         self.desired_arm = Arm(arm_value, mu, sigma)
         ###########
@@ -29,14 +29,14 @@ class Test():
 
         # Arm (2,1)
         arm_value = (2,1)
-        mu = 0.6
-        sigma = 0.2
+        mu = 0.5
+        sigma = 0.5
         arm = Arm(arm_value, mu, sigma)
         self.config_arms.append(arm)
 
         # Arm (1,1)
         arm_value = (1,1)
-        mu = 0.1
+        mu = 0.6
         sigma = 0.2
         arm = Arm(arm_value, mu, sigma)
         self.config_arms.append(arm)
@@ -51,6 +51,9 @@ class Test():
         y = np.random.normal(mu2, sigma2, 50000)
         return(ks_2samp(x, y).pvalue)
 
+    def get_reward(self, mu1, mu2):
+        return 1 - abs(mu2 - mu1)
+
 
     def test_execution(self):
         all_actions = []
@@ -63,9 +66,9 @@ class Test():
             for ts_arm in self.config_arms:
                 if ts_arm.arm == ts.last_action:
                     # this is the played arm. Calculate the reward
-                    prob = self.get_probability_from_kolmogorov_smirnov_test(ts_arm.mu, ts_arm.sigma, self.desired_arm.mu, self.desired_arm.sigma)
-
-            ts.start_strategy(prob)
+                    # reward = self.get_probability_from_kolmogorov_smirnov_test(ts_arm.mu, ts_arm.sigma, self.desired_arm.mu, self.desired_arm.sigma)
+                    reward = self.get_reward(ts_arm.mu, self.desired_arm.mu)
+            ts.start_strategy(reward)
         
         print("\n")
         print("Actions performed: ")

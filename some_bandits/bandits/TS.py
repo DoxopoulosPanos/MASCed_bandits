@@ -30,8 +30,10 @@ class TS(Bandit):
         if self.formula == "BB":  # Beta Prior, Binomial Posterior
             # update values based on reward
             self.update_posterior(reward)
-        elif self.formula == "NN":   # Normal Prior Normal Posterior
+        elif self.formula == "NN":   # Normal Prior Normal Posterior, known variance
             self.update_posterior_normal(reward)
+        elif self.formula == "NGN":   # Normal Gamma Prior, Normal Posterior (unknown mean and variance)
+            self.update_posterior_normal_from_gamma(reward)
 
 
         # iterate for each arm
@@ -68,6 +70,14 @@ class TS(Bandit):
             if ts_arm.arm == self.last_action:
                 ts_arm.rewards.append(reward)
                 ts_arm.calculate_new_mu_and_sigma()
+
+                print("ts_arm {} updated to mu = {} and sigma {}".format(ts_arm.arm, ts_arm.mu_0, ts_arm.sigma_0))
+
+    def update_posterior_normal_from_gamma(self, reward):
+        for ts_arm in self.ts_arms:
+            if ts_arm.arm == self.last_action:
+                ts_arm.rewards.append(reward)  # add new observation for this arm
+                ts_arm.update_normal_posterior_with_normal_gamma_prior()
 
                 print("ts_arm {} updated to mu = {} and sigma {}".format(ts_arm.arm, ts_arm.mu_0, ts_arm.sigma_0))
 
